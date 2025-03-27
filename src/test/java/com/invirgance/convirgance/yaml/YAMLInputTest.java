@@ -4,16 +4,11 @@
  */
 package com.invirgance.convirgance.yaml;
 
-import com.invirgance.convirgance.input.InputCursor;
+
 import com.invirgance.convirgance.json.JSONObject;
 import com.invirgance.convirgance.source.ClasspathSource;
-import com.invirgance.convirgance.source.Source;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +26,9 @@ public class YAMLInputTest
     {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-      
+        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n" +
+                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}\n" +
+                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}\n";
         YAMLInput input = new YAMLInput();
         ClasspathSource source = new ClasspathSource("/data.yaml");
         
@@ -39,10 +36,6 @@ public class YAMLInputTest
         {
             System.out.println(record);
         }
-        
-        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n" +
-                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}\n" +
-                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}\n";
         
         assertEquals(expected, outContent.toString());
         
@@ -56,7 +49,7 @@ public class YAMLInputTest
     {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        
+        String expected = "";
         YAMLInput input = new YAMLInput();
         ClasspathSource source = new ClasspathSource("/empty.yaml");
         
@@ -65,16 +58,31 @@ public class YAMLInputTest
             System.out.println(record);
         }
         
-        assertEquals("", new ByteArrayOutputStream().toString());
+        assertEquals(expected, outContent.toString());
+        
+    }
+        
+    /**
+     * Test read method on a YAML file with a single object.
+     */
+    @Test
+    public void testSingle()
+    {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n";
+        
+        YAMLInput input = new YAMLInput();
+        ClasspathSource source = new ClasspathSource("/single.yaml");
+        
+        for (JSONObject record : input.read(source))
+        {
+            System.out.println(record);
+        }
+        
+        assertEquals(expected, outContent.toString());
         
     }
     
-    // only one object in file
-    
-   
-    
-    // multiple files
-    
-
     
 }
