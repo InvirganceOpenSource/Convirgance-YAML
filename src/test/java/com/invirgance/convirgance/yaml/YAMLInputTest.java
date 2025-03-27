@@ -84,5 +84,41 @@ public class YAMLInputTest
         
     }
     
-    
+    /**
+     * Test read method on multiple YAML files
+     */
+    @Test
+    public void testMultipleFiles()
+    {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n" +
+                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}\n" +
+                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}\n" +
+                          "" +
+                          "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n";
+        
+        YAMLInput input = new YAMLInput();
+        ClasspathSource source1 = new ClasspathSource("/data.yaml");
+        ClasspathSource source2 = new ClasspathSource("/empty.yaml");
+        ClasspathSource source3 = new ClasspathSource("/single.yaml");
+        
+        for (JSONObject record : input.read(source1))
+        {
+            System.out.println(record);
+        }
+        
+        for (JSONObject record : input.read(source2))
+        {
+            System.out.println(record);
+        }
+        
+        for (JSONObject record : input.read(source3))
+        {
+            System.out.println(record);
+        }
+        
+        assertEquals(expected, outContent.toString());
+        
+    }
 }
