@@ -25,18 +25,12 @@ package com.invirgance.convirgance.yaml;
 
 import com.invirgance.convirgance.CloseableIterator;
 import com.invirgance.convirgance.ConvirganceException;
-import com.invirgance.convirgance.input.CSVInput;
 import com.invirgance.convirgance.input.Input;
 import com.invirgance.convirgance.input.InputCursor;
 import com.invirgance.convirgance.json.JSONObject;
-import com.invirgance.convirgance.source.FileSource;
 import com.invirgance.convirgance.source.Source;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
@@ -59,9 +53,7 @@ public class YAMLInput implements Input<JSONObject>
     
     private class YAMLInputCursor implements InputCursor<JSONObject>
     {
-        private final Source source; 
-        private Iterable<Object> records;
-        private Iterator<Object> iterator;
+        private final Source source;
                
         public YAMLInputCursor(Source source)
         {
@@ -71,47 +63,39 @@ public class YAMLInput implements Input<JSONObject>
         @Override
         public CloseableIterator<JSONObject> iterator()
         {
-           return new CloseableIterator<JSONObject>() { 
-               // set up yaml parser      
-               Yaml yaml = new Yaml();
-               {
-                    String path = ((FileSource) source).getFile().getAbsolutePath();
-                    System.out.println(path);
-                    try (InputStream input = new FileInputStream(path)) 
-                    {
-                        // get an iterable access to records
-                        records = yaml.loadAll(input); 
-                        iterator = records.iterator();  
-                    } catch (Exception e) 
-                    {
-                        e.printStackTrace();
-                    }
-               }
+            Yaml yaml = new Yaml();
+            InputStream in = source.getInputStream();
+            Iterator iterator = yaml.loadAll(in).iterator();
+            
+            return new CloseableIterator<JSONObject>() {
+                private boolean closed = false;
                
-               @Override
+                @Override
                 public boolean hasNext()
-               {
-                  return iterator.hasNext();
-               }
-                
-               @Override
-               public JSONObject next()
-               {
-                   try
-                   {
-//                       System.out.println(iterator.next());
-                       return new JSONObject((Map) iterator.next());
-                   }
-                   catch (Exception e)
-                   {
-                        throw new ConvirganceException("Error reading YAML record", e);
-                   }
-               }
-               
-               @Override
-               public void close() throws Exception
-               {
-                // how to close? Cast to Closeable iterator?
+                {
+                    if (!iterator.hasNext()) close();
+                    
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public JSONObject next()
+                {
+                    return new JSONObject((Map) iterator.next());  
+                }
+
+                @Override
+                public void close()
+                {
+                    if(closed) return;
+
+                    try
+                    {
+                        in.close();
+                    }
+                    catch(IOException e) { throw new ConvirganceException(e); }
+                    
+                    closed = true;
                } 
            };
         }              
