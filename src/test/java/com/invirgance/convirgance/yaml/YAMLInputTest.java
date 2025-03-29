@@ -5,10 +5,14 @@
 package com.invirgance.convirgance.yaml;
 
 
+import com.invirgance.convirgance.json.JSONArray;
 import com.invirgance.convirgance.json.JSONObject;
 import com.invirgance.convirgance.source.ClasspathSource;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,21 +28,19 @@ public class YAMLInputTest
     @Test
     public void testRead()
     {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n" +
-                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}\n" +
-                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}\n";
+        String expected = "[{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}," +
+                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}," +
+                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}]";
+        JSONArray<JSONObject> output = new JSONArray();
         YAMLInput input = new YAMLInput();
         ClasspathSource source = new ClasspathSource("/data.yaml");
         
         for (JSONObject record : input.read(source))
         {
-            System.out.println(record);
+            output.add(record);
         }
         
-        assertEquals(expected, outContent.toString());
-        
+        assertEquals(expected, output.toString());      
     }
     
     /**
@@ -47,19 +49,17 @@ public class YAMLInputTest
     @Test
     public void testEmpty()
     {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        String expected = "";
+        String expected = "[]";
+        JSONArray<JSONObject> output = new JSONArray();
         YAMLInput input = new YAMLInput();
         ClasspathSource source = new ClasspathSource("/empty.yaml");
         
         for (JSONObject record : input.read(source))
         {
-            System.out.println(record);
+            output.add(record);
         }
         
-        assertEquals(expected, outContent.toString());
-        
+        assertEquals(expected, output.toString());
     }
         
     /**
@@ -68,20 +68,17 @@ public class YAMLInputTest
     @Test
     public void testSingle()
     {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n";
-        
+        String expected = "[{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}]";
+        JSONArray<JSONObject> output = new JSONArray();
         YAMLInput input = new YAMLInput();
         ClasspathSource source = new ClasspathSource("/single.yaml");
         
         for (JSONObject record : input.read(source))
         {
-            System.out.println(record);
+            output.add(record);
         }
         
-        assertEquals(expected, outContent.toString());
-        
+        assertEquals(expected, output.toString());
     }
     
     /**
@@ -90,13 +87,12 @@ public class YAMLInputTest
     @Test
     public void testMultipleFiles()
     {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        String expected = "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n" +
-                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}\n" +
-                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}\n" +
+        JSONArray<JSONObject> output = new JSONArray();
+        String expected = "[{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}," +
+                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}," +
+                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}," +
                           "" +
-                          "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}\n";
+                          "{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}]";
         
         YAMLInput input = new YAMLInput();
         ClasspathSource source1 = new ClasspathSource("/data.yaml");
@@ -105,20 +101,19 @@ public class YAMLInputTest
         
         for (JSONObject record : input.read(source1))
         {
-            System.out.println(record);
+            output.add(record);
         }
         
         for (JSONObject record : input.read(source2))
         {
-            System.out.println(record);
+            output.add(record);
         }
         
         for (JSONObject record : input.read(source3))
         {
-            System.out.println(record);
+            output.add(record);
         }
         
-        assertEquals(expected, outContent.toString());
-        
+        assertEquals(expected, output.toString());
     }
 }
