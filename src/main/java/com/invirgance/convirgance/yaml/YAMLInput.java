@@ -81,7 +81,9 @@ public class YAMLInput implements Input<JSONObject>
                 @Override
                 public JSONObject next()
                 {
-                    return new JSONObject((Map) iterator.next());  
+                    JSONObject object = new JSONObject(true);
+                    object.putAll((Map) iterator.next());
+                    return object;  
                 }
 
                 @Override
