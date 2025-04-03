@@ -59,7 +59,11 @@ public class YAMLOutput implements Output
         @Override
         public void write(Iterator<JSONObject> iterator)
         {
-            out.println(yaml.dumpAll(iterator));
+            while (iterator.hasNext())
+            {
+                out.println("---");
+                out.print(yaml.dumpAsMap(iterator.next()));
+            }
         }
 
         @Override
