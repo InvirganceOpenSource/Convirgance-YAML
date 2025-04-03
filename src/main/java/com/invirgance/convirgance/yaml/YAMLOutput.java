@@ -52,6 +52,7 @@ public class YAMLOutput implements Output
         {
             if (!record.isEmpty()) 
             {
+                out.println("---");
                 out.print(yaml.dumpAsMap(record));
             }
         } 

@@ -45,7 +45,8 @@ public class YAMLOutputTest
     void testCursorWriteSingleObject() throws Exception
     {
         JSONObject record = new JSONObject("{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}");
-        String expected = "name: John Doe\n" +
+        String expected = "---\n" +
+                          "name: John Doe\n" +
                           "age: 30\n" +
                           "email: johndoe@example.com\n";
 
