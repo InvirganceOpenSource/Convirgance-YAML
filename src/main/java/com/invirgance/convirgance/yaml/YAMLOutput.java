@@ -40,7 +40,8 @@ public class YAMLOutput implements Output
     private class YAMLOutputCursor implements OutputCursor
     {
         private final Yaml yaml = new Yaml();
-        final PrintWriter out;
+        private final PrintWriter out;
+        private boolean empty = true;
         
         public YAMLOutputCursor(Target target)
         {
@@ -50,27 +51,18 @@ public class YAMLOutput implements Output
         @Override
         public void write(JSONObject record)
         {
+            if (!empty) out.println("---");
             if (!record.isEmpty()) 
             {
-                out.println("---");
                 out.print(yaml.dumpAsMap(record));
             }
+            empty = false;
         } 
-        
-        @Override
-        public void write(Iterator<JSONObject> iterator)
-        {
-            while (iterator.hasNext())
-            {
-                out.println("---");
-                out.print(yaml.dumpAsMap(iterator.next()));
-            }
-        }
 
         @Override
         public void close()
         {
-            if (out != null) out.close();
+            out.close();
         }      
     }
 }

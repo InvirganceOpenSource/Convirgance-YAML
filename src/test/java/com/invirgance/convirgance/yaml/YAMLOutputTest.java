@@ -45,18 +45,13 @@ public class YAMLOutputTest
     void testCursorWriteSingleObject() throws Exception
     {
         JSONObject record = new JSONObject("{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}");
-        String expected = "---\n" +
-                          "name: John Doe\n" +
+        String expected = "name: John Doe\n" +
                           "age: 30\n" +
                           "email: johndoe@example.com\n";
 
         try (OutputCursor cursor = output.write(target))
         {
             cursor.write(record);
-        }
-        catch(Exception e)
-        {
-            throw new ConvirganceException(e);
         }
         
         assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
@@ -75,10 +70,6 @@ public class YAMLOutputTest
         {
             cursor.write(record);
         }
-        catch(Exception e)
-        {
-            throw new ConvirganceException(e);
-        }
         
         assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
     }
@@ -93,8 +84,7 @@ public class YAMLOutputTest
                                           "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}," +
                                           "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}]");
 
-        String expected = "---\n" +
-                          "name: John Doe\n" +
+        String expected = "name: John Doe\n" +
                           "age: 30\n" +
                           "email: johndoe@example.com\n" +
                           "---\n" +
@@ -110,9 +100,63 @@ public class YAMLOutputTest
         {
             cursor.write(records);
         }
-        catch(Exception e)
+        
+        assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
+    }
+    
+    
+    /**
+     * Test for calling write() multiple times.
+     */
+    @Test
+    void testCursorWriteMultipleTimes() throws Exception
+    {
+        JSONArray<JSONObject> records = new JSONArray("[{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}," +
+                                          "{\"name\":\"Jane Smith\",\"age\":25,\"email\":\"janesmith@example.com\"}," +
+                                          "{\"name\":\"Alice Johnson\",\"age\":40,\"email\":\"alice@example.com\"}]");
+
+        String expected = "name: John Doe\n" +
+                          "age: 30\n" +
+                          "email: johndoe@example.com\n" +
+                          "---\n" +
+                          "name: Jane Smith\n" +
+                          "age: 25\n" +
+                          "email: janesmith@example.com\n" +
+                          "---\n" +
+                          "name: Alice Johnson\n" +
+                          "age: 40\n" +
+                          "email: alice@example.com\n";
+
+        try (OutputCursor cursor = output.write(target))
+        {  
+            for (JSONObject record : records)
+            {
+                cursor.write(record);  
+            }   
+        }
+        
+        assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
+    }
+    
+    /**
+     * Test for writing a non-empty object followed by two empty ones.
+     */
+    @Test
+    void testCursorNonEmptyThenEmpty() throws Exception
+    {
+        JSONObject empty = new JSONObject();
+        JSONObject nonempty = new JSONObject("{\"name\":\"John Doe\",\"age\":30,\"email\":\"johndoe@example.com\"}");
+        String expected = "name: John Doe\n" +
+                          "age: 30\n" +
+                          "email: johndoe@example.com\n" +
+                          "---\n" +
+                          "---\n";
+
+        try (OutputCursor cursor = output.write(target))
         {
-            throw new ConvirganceException(e);
+            cursor.write(nonempty);
+            cursor.write(empty);
+            cursor.write(empty);
         }
         
         assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
