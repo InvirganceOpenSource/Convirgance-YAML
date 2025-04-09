@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- *
+ * Test suite for YAMLInput class.
  * @author timur
  */
 public class YAMLInputTest
@@ -105,6 +105,26 @@ public class YAMLInputTest
         }
         
         for (JSONObject record : input.read(source3))
+        {
+            output.add(record);
+        }
+        
+        assertEquals(expected, output.toString());
+    }
+    
+    /**
+     * Test read method on nested YAML record
+     */
+    @Test
+    public void testNested()
+    {
+        
+        String expected = "[{\"users\":[{\"name\":\"Alice\",\"contact\":{\"email\":\"alice@example.com\",\"phone\":\"+111111111\"}},{\"name\":\"Bob\",\"contact\":{\"email\":\"bob@example.com\",\"phone\":\"+222222222\"}}]}]";
+        JSONArray<JSONObject> output = new JSONArray();
+        YAMLInput input = new YAMLInput();
+        ClasspathSource source = new ClasspathSource("/nested.yaml");
+        
+        for (JSONObject record : input.read(source))
         {
             output.add(record);
         }
