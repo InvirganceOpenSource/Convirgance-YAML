@@ -4,7 +4,6 @@
  */
 package com.invirgance.convirgance.yaml;
 
-import com.invirgance.convirgance.ConvirganceException;
 import com.invirgance.convirgance.json.JSONArray;
 import com.invirgance.convirgance.json.JSONObject;
 import com.invirgance.convirgance.output.OutputCursor;
@@ -160,5 +159,34 @@ public class YAMLOutputTest
         }
         
         assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
+    }
+    
+    
+    
+    /**
+     * Test for writing a nested YAML object.
+     */
+    @Test
+    void testNestedRecord() throws Exception
+    {
+        JSONObject record = new JSONObject("{\"users\":[{\"name\":\"Alice\",\"contact\":{\"email\":\"alice@example.com\",\"phone\":\"+111111111\"}},{\"name\":\"Bob\",\"contact\":{\"email\":\"bob@example.com\",\"phone\":\"+222222222\"}}]}");
+        
+        System.out.println(record);
+        String expected = "users:\n" +
+                          "- name: Alice\n" +
+                          "  contact:\n" +
+                          "    email: alice@example.com\n" +
+                          "    phone: \'+111111111\'\n" +
+                          "- name: Bob\n" +
+                          "  contact:\n" +
+                          "    email: bob@example.com\n" +
+                          "    phone: \'+222222222\'\n";
+        
+        try (OutputCursor cursor = output.write(target))
+        {
+            cursor.write(record);
+        }
+        
+        assertEquals(new String(target.getBytes(), "UTF-8"), expected); 
     }
 }
