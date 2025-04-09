@@ -9,7 +9,6 @@ import com.invirgance.convirgance.output.Output;
 import com.invirgance.convirgance.output.OutputCursor;
 import com.invirgance.convirgance.target.Target;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -52,10 +51,12 @@ public class YAMLOutput implements Output
         public void write(JSONObject record)
         {
             if (!empty) out.println("---");
+            
             if (!record.isEmpty()) 
             {
                 out.print(yaml.dumpAsMap(record));
             }
+            
             empty = false;
         } 
 
@@ -63,6 +64,6 @@ public class YAMLOutput implements Output
         public void close()
         {
             out.close();
-        }      
+        }
     }
 }
