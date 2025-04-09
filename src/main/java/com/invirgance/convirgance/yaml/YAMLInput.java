@@ -36,7 +36,7 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- *
+ * Provides support for taking in a YAML formatted stream of data into JSONObjects
  * @author timur
  */
 public class YAMLInput implements Input<JSONObject>
