@@ -24,14 +24,14 @@
 package com.invirgance.convirgance.output;
 
 import com.invirgance.convirgance.json.JSONObject;
-import com.invirgance.convirgance.output.Output;
-import com.invirgance.convirgance.output.OutputCursor;
 import com.invirgance.convirgance.target.Target;
 import java.io.PrintWriter;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Provides support for writing a stream of data as YAML formatted objects
+ * Provides support for writing a stream of data as YAML formatted objects. The
+ * separator <code>---</code> is used to denote multiple objects.
+ * 
  * @author timur
  */
 public class YAMLOutput implements Output
