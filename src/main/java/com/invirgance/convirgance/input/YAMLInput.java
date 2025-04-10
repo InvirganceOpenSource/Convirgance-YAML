@@ -21,12 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.invirgance.convirgance.yaml;
+package com.invirgance.convirgance.input;
 
 import com.invirgance.convirgance.CloseableIterator;
 import com.invirgance.convirgance.ConvirganceException;
-import com.invirgance.convirgance.input.Input;
-import com.invirgance.convirgance.input.InputCursor;
 import com.invirgance.convirgance.json.JSONObject;
 import com.invirgance.convirgance.source.Source;
 import java.io.IOException;
@@ -82,7 +80,10 @@ public class YAMLInput implements Input<JSONObject>
                 public JSONObject next()
                 {
                     JSONObject object = new JSONObject(true); // ordered JSONObject
-                    object.putAll((Map) iterator.next());
+                    Map next = (Map)iterator.next();
+                    
+                    if(next != null) object.putAll(next);
+                    
                     return object;  
                 }
 

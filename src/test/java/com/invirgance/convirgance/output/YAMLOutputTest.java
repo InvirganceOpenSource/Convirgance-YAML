@@ -1,12 +1,30 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2025 Invirgance LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
-package com.invirgance.convirgance.yaml;
+package com.invirgance.convirgance.output;
 
 import com.invirgance.convirgance.json.JSONArray;
 import com.invirgance.convirgance.json.JSONObject;
-import com.invirgance.convirgance.output.OutputCursor;
 import com.invirgance.convirgance.target.ByteArrayTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,23 +65,6 @@ public class YAMLOutputTest
         String expected = "name: John Doe\n" +
                           "age: 30\n" +
                           "email: johndoe@example.com\n";
-
-        try (OutputCursor cursor = output.write(target))
-        {
-            cursor.write(record);
-        }
-        
-        assertEquals(expected, new String(target.getBytes(), "UTF-8")); 
-    }
-    
-    /**
-     * Test for writing an empty JSONObject to YAML.
-     */
-    @Test
-    void testCursorWriteEmptyObject() throws Exception
-    {
-        JSONObject record = new JSONObject();
-        String expected = "";
 
         try (OutputCursor cursor = output.write(target))
         {
@@ -188,5 +189,18 @@ public class YAMLOutputTest
         }
         
         assertEquals(new String(target.getBytes(), "UTF-8"), expected); 
+    }
+    
+    @Test
+    public void testBlankRecord() throws Exception
+    {
+        JSONArray array = new JSONArray();
+        YAMLOutput output = new YAMLOutput();
+        ByteArrayTarget target = new ByteArrayTarget();
+        
+        array.add(new JSONObject());
+        output.write(target, array);
+        
+        assertEquals("---\n", new String(target.getBytes(), "UTF-8"));
     }
 }
